@@ -1,0 +1,11 @@
+---
+
+prereq_packages:
+  - sudo
+  - wget
+
+yum_d_repo: "https://download.virtualbox.org/virtualbox/rpm/fedora/virtualbox.repo"
+
+repo_keys:
+  # - "sudo rpm --import oracle_vbox.asc"
+  - "wget -q https://www.virtualbox.org/download/oracle_vbox.asc -O- | rpm --import -"

@@ -1,0 +1,9 @@
+---
+
+prereq_packages:
+  - sudo
+  - wget
+
+virtualbox_version: 5.2
+
+vbox_extension_pack_version: 12
