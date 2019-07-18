@@ -1,10 +1,5 @@
 ---
 
-# References:
-# - https://www.itzgeek.com/how-tos/linux/centos-how-tos/install-virtualbox-4-3-on-centos-7-rhel-7.html
-# - https://wiki.centos.org/HowTos/Virtualization/VirtualBox
-# - https://www.virtualbox.org/wiki/Linux_Downloads?
-
 prereq_packages:
   - sudo
   - wget
@@ -13,10 +8,5 @@ prereq_packages:
   - kernel-headers
   - dkms
 
-yum_d_repo: "https://download.virtualbox.org/virtualbox/rpm/el/virtualbox.repo"
-
-repo_keys:
-  - "sudo rpm --import oracle_vbox.asc"
-  - "wget -q https://www.virtualbox.org/download/oracle_vbox.asc -O- | rpm --import -"
-
-virtualbox_package: "VirtualBox-{{ virtualbox_version }}"
+virtualbox_packages:
+  - "VirtualBox-{{ virtualbox_version }}"

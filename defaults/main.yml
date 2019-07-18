@@ -1,9 +1,37 @@
 ---
 
+virtualbox_version: 6.0
+vbox_extension_pack_version: 10
+
 prereq_packages:
   - sudo
   - wget
 
-virtualbox_version: 5.2
+virtualbox_apt_keys:
+  - "https://www.virtualbox.org/download/oracle_vbox_2016.asc"
+  - "https://www.virtualbox.org/download/oracle_vbox.asc"
 
-vbox_extension_pack_version: 12
+apt_repos:
+  - "deb https://download.virtualbox.org/virtualbox/debian {{ ansible_distribution_release }} contrib"
+
+virtualbox_yum_repos:
+  - name: virtualbox repository
+    repo_description: "Oracle Linux / RHEL / CentOS-$releasever / $basearch - VirtualBox"
+    file: "virtualbox"
+    repo_key: "https://www.virtualbox.org/download/oracle_vbox.asc"
+    repo_name: "virtualbox"
+    repo_baseurl: "http://download.virtualbox.org/virtualbox/rpm/el/$releasever/$basearch"
+    gpg_check: true
+    repo_gpgcheck: true
+
+package_mgr_to_use: auto
+
+virtualbox_packages:
+  - "virtualbox-{{ virtualbox_version }}"
+
+configure_vbox_users: false
+vbox_user: ""
+
+install_extpack: true
+extpack_url: "http://download.virtualbox.org/virtualbox/{{ virtualbox_version }}.{{ vbox_extension_pack_version }}/Oracle_VM_VirtualBox_Extension_Pack-{{ virtualbox_version }}.{{ vbox_extension_pack_version }}.vbox-extpack"
+extpack_path: "/tmp/Oracle_VM_VirtualBox_Extension_Pack-{{ virtualbox_version }}.{{ vbox_extension_pack_version }}/Oracle_VM_VirtualBox_Extension_Pack-{{ virtualbox_version }}.{{ vbox_extension_pack_version }}.vbox-extpack"

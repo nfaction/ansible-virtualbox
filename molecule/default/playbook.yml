@@ -1,7 +1,9 @@
 ---
 - name: Converge
   hosts: all
-  vars: []
+  vars:
+    configure_vbox_users: true
+    vbox_user: root
   # os_vars_dir: ../../../../group_vars/operating-systems
   roles:
     - role: ansible-virtualbox

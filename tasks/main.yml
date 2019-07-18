@@ -1,11 +1,11 @@
 ---
-
-# https://github.com/mediapeers/ansible-role-virtualbox/blob/master/tasks/virtualbox.yml
-
+################
+# OS Variables #
+################
 - name: gather os specific variables
   include_vars: '{{ item }}'
   with_first_found:
-    - "{{ ansible_distribution }}-{{ ansible_distribution_major_version}}.yml"
+    - "{{ ansible_distribution }}-{{ ansible_distribution_major_version }}.yml"
     - "{{ ansible_distribution }}.yml"
     - "{{ ansible_os_family }}.yml"
 
@@ -17,49 +17,70 @@
     - ansible_os_family == "Debian"
 
 - name: install prereq packages
-  action: >
-    {{ ansible_pkg_mgr }} name={{ item }} state=present
-  with_items: "{{ prereq_packages }}"
+  package:
+    name: "{{ item }}"
+    state: present
+    use: "{{ package_mgr_to_use }}"
+  with_items:
+    - "{{ prereq_packages }}"
   tags:
     - install-pkgs
     - prereq
 
-- name: download rhel yum repo
-  get_url:
-    url: "{{ yum_d_repo }}"
-    dest: /etc/yum.repos.d/virtualbox.repo
-    mode: 0644
-  when:
-    - ansible_os_family == "RedHat"
-
-- name: install apt repository
-  apt_repository:
-    repo: "{{ apt_repo }}"
-    state: present
-    # filename:
-  when:
-    - ansible_os_family == "Debian"
-
+###################################
+# Configure keys and repositories #
+###################################
 - name: add apt key
   apt_key:
     url: "{{ item }}"
     state: present
   with_items:
-    - "https://www.virtualbox.org/download/oracle_vbox_2016.asc"
-    - "https://www.virtualbox.org/download/oracle_vbox.asc"
+    - "{{ virtualbox_apt_keys }}"
   register: apt_key
   until: apt_key | succeeded
   when:
     - ansible_os_family == "Debian"
   tags: apt_keys
 
-- name: install rpm key
+- name: Add an rpm gpg key from a keyserver
   rpm_key:
+    key: "{{ item.repo_key }}"
     state: present
-    key: https://www.virtualbox.org/download/oracle_vbox.asc
   register: add_virtualbox_key
+  with_items:
+    - "{{ virtualbox_yum_repos | default([]) }}"
   when:
-    - ansible_os_family == "RedHat"
+    - 'ansible_os_family == "RedHat"'
+  tags:
+    - package-repos
+
+- name: install apt repository
+  apt_repository:
+    repo: "{{ item }}"
+    state: present
+    filename: "virtualbox"
+  with_items:
+    - "{{ apt_repos }}"
+  when:
+    - ansible_os_family == "Debian"
+
+- name: configure yum repository
+  yum_repository:
+    name: "{{ item.repo_name }}"
+    file: "{{ item.file }}"
+    description: "{{ item.repo_description | default(omit) }}"
+    baseurl: "{{ item.repo_baseurl }}"
+    gpgkey: "{{ item.repo_key | default(omit) }}"
+    gpgcheck: "{{ item.gpg_check | default(false) }}"
+    repo_gpgcheck: "{{ item.repo_gpgcheck | default(omit) }}"
+    enabled: "{{ item.enabled | default(true) }}"
+    state: "{{ item.state | default(omit) }}"
+  with_items:
+    - "{{ virtualbox_yum_repos | default([]) }}"
+  when:
+    - 'ansible_os_family == "RedHat"'
+  tags:
+    - package-repos
 
 - name: Update repo cache for the new repo
   command: yum makecache -y --disablerepo=* --enablerepo=virtualbox
@@ -67,34 +88,48 @@
     - add_virtualbox_key.changed
     - ansible_os_family == "RedHat"
 
-- name: install bundle repository keys
-  shell: "{{ item }}"
-  with_items: "{{ repo_keys | default([]) }}"
-  failed_when: false
-  when:
-    - ansible_os_family == "RedHat"
-
+####################
+# Install Packages #
+####################
 - name: install virtualbox
-  action: >
-    {{ ansible_pkg_mgr }} name={{ item }} state=present update_cache=yes
-  with_items: "{{ virtualbox_package }}"
+  package:
+    name: "{{ item }}"
+    state: present
+    use: "{{ package_mgr_to_use }}"
+  with_items:
+    - "{{ virtualbox_packages }}"
   tags:
     - install-pkgs
 
+###############################
+# Install VBox Extension Pack #
+###############################
 - name: Check if extension pack is already installed
   shell: "VBoxManage list extpacks"
+  changed_when: false
   register: extpack_list
 
 - name: Download VirtualBox extension pack
-  shell: "cd /tmp/ &&  wget http://download.virtualbox.org/virtualbox/{{ virtualbox_version }}.{{ vbox_extension_pack_version }}/Oracle_VM_VirtualBox_Extension_Pack-{{ virtualbox_version }}.{{ vbox_extension_pack_version }}.vbox-extpack"
-  when: 'extpack_list.stdout == "Extension Packs: 0"'
+  get_url:
+    url: "{{ extpack_url }}"
+    dest: "{{ extpack_path }}"
+  when:
+    - 'extpack_list.stdout == "Extension Packs: 0"'
+    - install_extpack | bool
 
 - name: Install VirtualBox extension pack
-  shell: "VBoxManage extpack install --replace --accept-license=56be48f923303c8cababb0bb4c478284b688ed23f16d775d729b89a2e8e5f9eb /tmp/Oracle_VM_VirtualBox_Extension_Pack-{{ virtualbox_version }}.{{ vbox_extension_pack_version }}.vbox-extpack"
-  when: 'extpack_list.stdout == "Extension Packs: 0"'
+  shell: "VBoxManage extpack install --replace --accept-license=56be48f923303c8cababb0bb4c478284b688ed23f16d775d729b89a2e8e5f9eb {{ extpack_path }}"
+  when:
+    - 'extpack_list.stdout == "Extension Packs: 0"'
+    - install_extpack | bool
 
+#################
+# Add VBox User #
+#################
 - name: add main user to vboxusers group
   user:
-    name: "{{ USER_ACCOUNT.NAME }}"
+    name: "{{ vbox_user }}"
     groups: vboxusers
     append: true
+  when:
+    - configure_vbox_users | bool
