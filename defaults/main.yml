@@ -1,5 +1,9 @@
 ---
 
+# Workarounds for running the playbook in this role
+ansible_root_dir: "{{ playbook_dir }}"
+ansible_root_dir_roles_path: "{{ ansible_root_dir }}/roles"
+
 virtualbox_version: 6.0
 vbox_extension_pack_version: 10
 
@@ -11,8 +15,10 @@ virtualbox_apt_keys:
   - "https://www.virtualbox.org/download/oracle_vbox_2016.asc"
   - "https://www.virtualbox.org/download/oracle_vbox.asc"
 
+virtualbox_dist_release: "{{ ansible_distribution_release }}"
+
 apt_repos:
-  - "deb https://download.virtualbox.org/virtualbox/debian {{ ansible_distribution_release }} contrib"
+  - "deb https://download.virtualbox.org/virtualbox/debian {{ virtualbox_dist_release }} contrib"
 
 virtualbox_yum_repos:
   - name: virtualbox repository
@@ -33,5 +39,7 @@ configure_vbox_users: false
 vbox_user: ""
 
 install_extpack: true
-extpack_url: "http://download.virtualbox.org/virtualbox/{{ virtualbox_version }}.{{ vbox_extension_pack_version }}/Oracle_VM_VirtualBox_Extension_Pack-{{ virtualbox_version }}.{{ vbox_extension_pack_version }}.vbox-extpack"
-extpack_path: "/tmp/Oracle_VM_VirtualBox_Extension_Pack-{{ virtualbox_version }}.{{ vbox_extension_pack_version }}/Oracle_VM_VirtualBox_Extension_Pack-{{ virtualbox_version }}.{{ vbox_extension_pack_version }}.vbox-extpack"
+
+extpack: "Oracle_VM_VirtualBox_Extension_Pack-{{ virtualbox_version }}.{{ vbox_extension_pack_version }}.vbox-extpack"
+extpack_url: "http://download.virtualbox.org/virtualbox/{{ virtualbox_version }}.{{ vbox_extension_pack_version }}/{{ extpack }}"
+extpack_path: "/tmp/"
