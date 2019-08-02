@@ -4,6 +4,13 @@
   vars:
     configure_vbox_users: true
     vbox_user: root
-  # os_vars_dir: ../../../../group_vars/operating-systems
+
+  pre_tasks:
+    - name: set override for ansible_distribution_release
+      set_fact:
+        virtualbox_dist_release: "buster"
+      when:
+        - ansible_distribution == "Debian"
+        - ansible_distribution_major_version | int == 10
   roles:
     - role: ansible-virtualbox

@@ -7,3 +7,5 @@ prereq_packages:
 
 virtualbox_packages:
   - "virtualbox-{{ virtualbox_version }}"
+
+vagrant_binary: "deb"

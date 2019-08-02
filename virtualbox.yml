@@ -1,0 +1,19 @@
+---
+#
+# Usage:
+#
+#   ansible-playbook ansible-virtualbox/virtualbox.yml -i <virtualbox-hosts-file> -vvv
+#
+- name: configure virtualbox
+  hosts: all
+  vars: []
+  pre_tasks:
+    - name: set playbook dir when running this playbook here
+      set_fact:
+        ansible_root_dir: "{{ playbook_dir | regex_replace('/roles/ansible-virtualbox', '') }}"
+      when: "'/roles/ansible-virtualbox' in playbook_dir"
+      tags:
+        - virtualbox
+
+  roles:
+    - role: ansible-virtualbox

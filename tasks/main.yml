@@ -8,6 +8,8 @@
     - "{{ ansible_distribution }}-{{ ansible_distribution_major_version }}.yml"
     - "{{ ansible_distribution }}.yml"
     - "{{ ansible_os_family }}.yml"
+  tags:
+    - vagrant
 
 - name: update cache for apt
   apt:
@@ -20,7 +22,7 @@
   package:
     name: "{{ item }}"
     state: present
-    use: "{{ package_mgr_to_use }}"
+    use: "{{ ansible_pkg_mgr }}"
   with_items:
     - "{{ prereq_packages }}"
   tags:
@@ -95,7 +97,7 @@
   package:
     name: "{{ item }}"
     state: present
-    use: "{{ package_mgr_to_use }}"
+    use: "{{ ansible_pkg_mgr }}"
   with_items:
     - "{{ virtualbox_packages }}"
   tags:
@@ -133,3 +135,38 @@
     append: true
   when:
     - configure_vbox_users | bool
+
+###########
+# Vagrant #
+###########
+# - name: install vagrant via apt
+#   apt:
+#     name: "{{ vagrant_pkg_url }}"
+#     state: present
+#   when:
+#     - install_vagrant | bool
+#     - ansible_os_family == "Debian"
+
+# - name: install vagrant via yum
+#   yum:
+#     name: "{{ vagrant_pkg_url }}"
+#     state: present
+#   when:
+#     - install_vagrant | bool
+#     - ansible_os_family == "RedHat"
+
+# - name: install vagrant via dnf
+#   dnf:
+#     name: "{{ vagrant_pkg_url }}"
+#     state: present
+#   when:
+#     - install_vagrant | bool
+#     - ansible_os_family == "RedHat"
+
+- name: install vagrant
+  package:
+    name: "{{ vagrant_pkg_url }}"
+    state: present
+    use: "{{ ansible_pkg_mgr }}"
+  tags:
+    - vagrant

@@ -10,3 +10,5 @@ prereq_packages:
 
 virtualbox_packages:
   - "VirtualBox-{{ virtualbox_version }}"
+
+vagrant_binary: "rpm"

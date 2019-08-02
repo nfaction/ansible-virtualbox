@@ -43,3 +43,9 @@ install_extpack: true
 extpack: "Oracle_VM_VirtualBox_Extension_Pack-{{ virtualbox_version }}.{{ vbox_extension_pack_version }}.vbox-extpack"
 extpack_url: "http://download.virtualbox.org/virtualbox/{{ virtualbox_version }}.{{ vbox_extension_pack_version }}/{{ extpack }}"
 extpack_path: "/tmp/"
+
+# Optional Vagrant install
+install_vagrant: true
+vagrant_version: "2.2.5"
+vagrant_binary: "deb"
+vagrant_pkg_url: "https://releases.hashicorp.com/vagrant/{{ vagrant_version }}/vagrant_{{ vagrant_version }}_x86_64.{{ vagrant_binary }}"
