@@ -139,34 +139,40 @@
 ###########
 # Vagrant #
 ###########
-# - name: install vagrant via apt
-#   apt:
-#     name: "{{ vagrant_pkg_url }}"
-#     state: present
-#   when:
-#     - install_vagrant | bool
-#     - ansible_os_family == "Debian"
-
-# - name: install vagrant via yum
-#   yum:
-#     name: "{{ vagrant_pkg_url }}"
-#     state: present
-#   when:
-#     - install_vagrant | bool
-#     - ansible_os_family == "RedHat"
-
-# - name: install vagrant via dnf
-#   dnf:
-#     name: "{{ vagrant_pkg_url }}"
-#     state: present
-#   when:
-#     - install_vagrant | bool
-#     - ansible_os_family == "RedHat"
-
-- name: install vagrant
-  package:
-    name: "{{ vagrant_pkg_url }}"
+- name: install vagrant via apt
+  apt:
+    deb: "{{ vagrant_pkg_url }}"
     state: present
-    use: "{{ ansible_pkg_mgr }}"
+  when:
+    - install_vagrant | bool
+    - ansible_os_family == "Debian"
   tags:
     - vagrant
+
+- name: install vagrant via yum
+  yum:
+    name: "{{ vagrant_pkg_url }}"
+    state: present
+  when:
+    - install_vagrant | bool
+    - ansible_os_family == "RedHat"
+  tags:
+    - vagrant
+
+- name: install vagrant via dnf
+  dnf:
+    name: "{{ vagrant_pkg_url }}"
+    state: present
+  when:
+    - install_vagrant | bool
+    - ansible_os_family == "Fedora"
+  tags:
+    - vagrant
+
+# - name: install vagrant
+#   package:
+#     name: "{{ vagrant_pkg_url }}"
+#     state: present
+#     use: "{{ ansible_pkg_mgr }}"
+#   tags:
+#     - vagrant
