@@ -38,8 +38,7 @@
     state: present
   with_items:
     - "{{ virtualbox_apt_keys }}"
-  register: apt_key
-  until: apt_key | succeeded
+  retries: 5
   when:
     - ansible_os_family == "Debian"
   tags: apt_keys
