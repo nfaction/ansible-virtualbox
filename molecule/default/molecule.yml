@@ -7,7 +7,7 @@ lint:
   name: yamllint
 platforms:
   - name: virtualbox-instance
-    image: "geerlingguy/docker-${MOLECULE_DISTRO:-debian10}-ansible:latest"
+    image: "geerlingguy/docker-${MOLECULE_DISTRO:-debian10}-ansible:${MOLECULE_TAG:-latest}"
     command: ${MOLECULE_DOCKER_COMMAND:-""}
     volumes:
       - /sys/fs/cgroup:/sys/fs/cgroup:ro
@@ -19,6 +19,21 @@ provisioner:
     name: ansible-lint
     options:
       x: ["ANSIBLE0006", "ANSIBLE0012", "ANSIBLE0013", "ANSIBLE0016"]
+scenario:
+  name: default
+  test_sequence:
+    - destroy
+    - dependency
+    - prepare
+    # - lint
+    - syntax
+    - create
+    - converge
+    - idempotence
+    - side_effect
+    # - verify
+    - destroy
+Scenario: 'default'
 verifier:
   name: testinfra
   lint:
