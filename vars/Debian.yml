@@ -7,5 +7,11 @@ prereq_packages:
 
 virtualbox_packages:
   - "virtualbox-{{ virtualbox_version }}"
+  - build-essential
+  - module-assistant
+  #- "linux-headers-{{ ansible_kernel }}"
+  #- virtualbox-dkms
 
 vagrant_binary: "deb"
+
+post_install_shell_cmds: "/sbin/vboxconfig"
