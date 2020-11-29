@@ -119,7 +119,7 @@
     - install_extpack | bool
 
 - name: Install VirtualBox extension pack
-  shell: "VBoxManage extpack install --replace --accept-license=56be48f923303c8cababb0bb4c478284b688ed23f16d775d729b89a2e8e5f9eb {{ extpack_path }}/{{ extpack }}"
+  shell: "echo 'y' | VBoxManage extpack install --replace --accept-license={{ extpack_license }} {{ extpack_path }}/{{ extpack }}"
   when:
     - 'extpack_list.stdout == "Extension Packs: 0"'
     - install_extpack | bool

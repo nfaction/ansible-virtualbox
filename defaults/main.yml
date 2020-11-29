@@ -4,8 +4,8 @@
 ansible_root_dir: "{{ playbook_dir }}"
 ansible_root_dir_roles_path: "{{ ansible_root_dir }}/roles"
 
-virtualbox_version: 6.0
-vbox_extension_pack_version: 10
+virtualbox_version: 6.1
+vbox_extension_pack_version: 16
 
 prereq_packages:
   - sudo
@@ -42,10 +42,11 @@ install_extpack: true
 
 extpack: "Oracle_VM_VirtualBox_Extension_Pack-{{ virtualbox_version }}.{{ vbox_extension_pack_version }}.vbox-extpack"
 extpack_url: "http://download.virtualbox.org/virtualbox/{{ virtualbox_version }}.{{ vbox_extension_pack_version }}/{{ extpack }}"
+extpack_license: "33d7284dc4a0ece381196fda3cfe2ed0e1e8e7ed7f27b9a9ebc4ee22e24bd23c"
 extpack_path: "/tmp/"
 
 # Optional Vagrant install
 install_vagrant: true
-vagrant_version: "2.2.5"
+vagrant_version: "2.2.14"
 vagrant_binary: "deb"
 vagrant_pkg_url: "https://releases.hashicorp.com/vagrant/{{ vagrant_version }}/vagrant_{{ vagrant_version }}_x86_64.{{ vagrant_binary }}"
