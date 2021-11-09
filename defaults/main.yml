@@ -5,7 +5,7 @@ ansible_root_dir: "{{ playbook_dir }}"
 ansible_root_dir_roles_path: "{{ ansible_root_dir }}/roles"
 
 virtualbox_version: 6.1
-vbox_extension_pack_version: 16
+vbox_extension_pack_version: 28
 
 prereq_packages:
   - sudo
@@ -47,6 +47,6 @@ extpack_path: "/tmp/"
 
 # Optional Vagrant install
 install_vagrant: true
-vagrant_version: "2.2.14"
+vagrant_version: "2.2.18"
 vagrant_binary: "deb"
 vagrant_pkg_url: "https://releases.hashicorp.com/vagrant/{{ vagrant_version }}/vagrant_{{ vagrant_version }}_x86_64.{{ vagrant_binary }}"
